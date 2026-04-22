@@ -117,11 +117,18 @@ def create_acc_cancel(packer, CP, CAN, cruise_info_copy):
   return packer.make_can_msg("SCC_CONTROL", CAN.ECAN, values)
 
 
-def create_lfahda_cluster(packer, CAN, enabled, lfa_icon):
-  values = {
-    "HDA_ICON": 1 if enabled else 0,
-    "LFA_ICON": lfa_icon,
-  }
+def create_lfahda_cluster(packer, CAN, enabled, lfa_icon, CP=None):
+  # CCNC cars (Carnival 2025+) use different signal layout for LFAHDA_CLUSTER
+  if CP is not None and CP.flags & HyundaiFlags.CCNC:
+    values = {
+      "NEW_SIGNAL_5": 1,  # bit 25 in LFAHDA_CLUSTER (DBC name pending) — must be 1 for CCNC cluster
+      "LFA_ICON": 2 if enabled else 0,
+    }
+  else:
+    values = {
+      "HDA_ICON": 1 if enabled else 0,
+      "LFA_ICON": lfa_icon,
+    }
   return packer.make_can_msg("LFAHDA_CLUSTER", CAN.ECAN, values)
 
 
