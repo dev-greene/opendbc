@@ -187,6 +187,11 @@ class CANParser:
 
     self.message_states[msg.address] = state
 
+  def reset_bus_timeout(self) -> None:
+    """Reset bus timeout tracking. Call after a known bus disruption (e.g. ECU knockout)
+    to prevent a transient CAN silence from triggering a permanent canBusMissing event."""
+    self.last_nonempty_nanos = self._last_update_nanos
+
   @property
   def bus_timeout(self) -> bool:
     ignore_alive = all(s.ignore_alive for s in self.message_states.values())

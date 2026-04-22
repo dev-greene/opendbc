@@ -578,7 +578,7 @@ class CAR(Platforms):
       HyundaiCarDocs("Kia Carnival (with HDA II) 2025-26", "Highway Driving Assist II", car_parts=CarParts.common([CarHarness.hyundai_q])),
     ],
     CarSpecs(mass=2087, wheelbase=3.09, steerRatio=14.23),
-    flags=HyundaiFlags.CCNC | HyundaiFlags.UNSUPPORTED_LONGITUDINAL | HyundaiFlags.CANFD_ALT_BUTTONS | HyundaiFlags.CANFD_RADAR_SCC,
+    flags=HyundaiFlags.CCNC | HyundaiFlags.CANFD_ALT_BUTTONS,
   )
 
   # Genesis

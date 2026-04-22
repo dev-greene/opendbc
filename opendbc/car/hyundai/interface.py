@@ -140,6 +140,9 @@ class CarInterface(CarInterfaceBase):
 
     if ret.openpilotLongitudinalControl:
       ret.safetyConfigs[-1].safetyParam |= HyundaiSafetyFlags.LONG.value
+      # BSM messages stop when ADAS/radar are disabled for longitudinal
+      if ret.flags & HyundaiFlags.CANFD_LKA_STEER_MSG:
+        ret.enableBsm = False
     if ret.flags & HyundaiFlags.HYBRID:
       ret.safetyConfigs[-1].safetyParam |= HyundaiSafetyFlags.HYBRID_GAS.value
     elif ret.flags & HyundaiFlags.EV:
@@ -236,6 +239,10 @@ class CarInterface(CarInterfaceBase):
                                                 (CP_SP.flags & HyundaiFlagsSP.ENHANCED_SCC)):
       addr, bus = 0x7d0, CanBus(CP).ECAN if CP.flags & HyundaiFlags.CANFD else 0
       if CP.flags & HyundaiFlags.CANFD_LKA_STEER_MSG.value:
+        # LKA steering: disable ADAS ECU (0x730) only. Radar stays active (can't be
+        # silenced via UDS on this car). Stock SCC_CONTROL coexists with openpilot's
+        # on ECAN — check_relay=false on SCC_CONTROL prevents relay_malfunction.
+        # ADRV messages substitute for disabled ADAS output.
         addr, bus = 0x730, CanBus(CP).ECAN
       disable_ecu(can_recv, can_send, bus=bus, addr=addr, com_cont_req=communication_control)
 
